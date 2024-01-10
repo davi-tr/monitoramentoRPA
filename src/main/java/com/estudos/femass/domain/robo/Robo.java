@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -59,6 +60,16 @@ public class Robo {
         }
         if (dados.area() !=null){
             this.area = dados.area();
+        }
+    }
+    public boolean getStatus(){
+        return status;
+    }
+
+    public void checkStatus(Robo robo){
+        long diferenca = Math.abs(ChronoUnit.MINUTES.between(robo.getHora(), LocalDateTime.now()));
+        if(diferenca > 60){
+            this.status = false;
         }
     }
 
