@@ -37,7 +37,7 @@ public class RoboController {
     @PostMapping
     public ResponseEntity cadastro(@RequestBody @Valid DadosCadastroRobo dados, UriComponentsBuilder uriBuilder){
         var robo = new Robo(dados);
-        var roboBusca = repository.findAllByNomeAndStatusTrue(dados.nome());
+        var roboBusca = repository.getReferenceByNomeAndMaquina(dados.nome(),dados.maquina());
         if(roboBusca !=null){
             return ResponseEntity.badRequest().body(new MensagemErro("Robô já existe"));
         }
@@ -49,7 +49,7 @@ public class RoboController {
 
     @PutMapping()
     public ResponseEntity atualizaHora(@RequestBody @Valid DadosAtualizarHoraRobo dados){
-        var robo = repository.findAllByNomeAndStatusTrue(dados.nome());
+        var robo = repository.getReferenceByNomeAndMaquina(dados.nome(), dados.maquina());
         robo.atualizarHora(robo);
         repository.save(robo);
 
