@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequestMapping("/RPA")
 public class RoboController {
@@ -26,7 +29,7 @@ public class RoboController {
         for (Robo estado:
              robo) {
             estado.checkStatus(estado);
-
+            repository.save(estado);
         }
         var page = repository.findAll(paginacao).map(DadosListagemRobos::new);
 
@@ -37,10 +40,24 @@ public class RoboController {
     @PostMapping
     public ResponseEntity cadastro(@RequestBody @Valid DadosCadastroRobo dados, UriComponentsBuilder uriBuilder){
         var robo = new Robo(dados);
-        var roboBusca = repository.getReferenceByNomeAndMaquina(dados.nome(),dados.maquina());
+        var roboBusca = repository.getReferenceByNomeAndMaquinas(dados.nome(),dados.maquina());
         if(roboBusca !=null){
-            return ResponseEntity.badRequest().body(new MensagemErro("Robô já existe"));
+            if(roboBusca.getNome() == dados.nome()){
+                for (String maquina:
+                     robo.getMaquinas()) {
+                    if (maquina == dados.maquina()){
+                        return ResponseEntity.badRequest().body(new MensagemErro("Esse robô já existe nessa maquina"));
+                    } else{
+                        roboBusca.loadMaquians(maquina);
+                        repository.save(robo);
+
+                        var uri = uriBuilder.path("RPA/id={id}").buildAndExpand(robo.getId()).toUri();
+                        return ResponseEntity.created(uri).body(new DadosUnicoRobo(robo));
+                    }
+                }
+            }
         }
+
         repository.save(robo);
 
         var uri = uriBuilder.path("RPA/id={id}").buildAndExpand(robo.getId()).toUri();
@@ -49,7 +66,7 @@ public class RoboController {
 
     @PutMapping()
     public ResponseEntity atualizaHora(@RequestBody @Valid DadosAtualizarHoraRobo dados){
-        var robo = repository.getReferenceByNomeAndMaquina(dados.nome(), dados.maquina());
+        var robo = repository.getReferenceByNomeAndMaquinas(dados.nome(), dados.maquina());
         robo.atualizarHora(robo);
         repository.save(robo);
 

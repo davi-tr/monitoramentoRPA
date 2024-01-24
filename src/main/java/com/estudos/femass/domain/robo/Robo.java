@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -32,8 +34,10 @@ public class Robo {
     @Column(name = "HoraAtualiza")
     private LocalDateTime hora;
 
+
     @Column(name = "Maquina")
-    private String maquina;
+    private List<String> maquinas = new ArrayList<>();
+
 
     @Column(name = "Area")
     private String area;
@@ -41,11 +45,14 @@ public class Robo {
     public Robo(DadosCadastroRobo dados){
         this.status = true;
         this.nome = dados.nome();
-        this.maquina = dados.maquina();
+        maquinas.add(dados.maquina());
         this.area = dados.area();
         this.hora = LocalDateTime.now();
     }
 
+    public void loadMaquians (String s){
+        maquinas.add(s);
+    }
     public void atualizarHora(Robo robo){
         this.hora = LocalDateTime.now();
     }
@@ -56,7 +63,7 @@ public class Robo {
             this.nome = dados.nome();
         }
         if (dados.maquina() !=null){
-            this.maquina = dados.maquina();
+            maquinas.add(dados.maquina());
         }
         if (dados.area() !=null){
             this.area = dados.area();
@@ -70,6 +77,9 @@ public class Robo {
         long diferenca = Math.abs(ChronoUnit.MINUTES.between(robo.getHora(), LocalDateTime.now()));
         if(diferenca > 60){
             this.status = false;
+            System.out.println(robo.nome+": "+diferenca);
+        } else {
+            this.status = true;
         }
     }
 
