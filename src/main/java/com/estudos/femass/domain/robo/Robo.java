@@ -34,9 +34,11 @@ public class Robo {
     @Column(name = "HoraAtualiza")
     private LocalDateTime hora;
 
-
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Column(name = "Maquina")
-    private List<String> maquinas = new ArrayList<>();
+    private List<Maquina> maquinas = new ArrayList<>();
 
 
     @Column(name = "Area")
@@ -45,13 +47,13 @@ public class Robo {
     public Robo(DadosCadastroRobo dados){
         this.status = true;
         this.nome = dados.nome();
-        maquinas.add(dados.maquina());
         this.area = dados.area();
         this.hora = LocalDateTime.now();
     }
 
-    public void loadMaquians (String s){
-        maquinas.add(s);
+    public void loadMaquians (Maquina maquina){
+        maquinas.add(maquina);
+
     }
     public void atualizarHora(Robo robo){
         this.hora = LocalDateTime.now();
@@ -63,7 +65,7 @@ public class Robo {
             this.nome = dados.nome();
         }
         if (dados.maquina() !=null){
-            maquinas.add(dados.maquina());
+            maquinas.add(new Maquina(dados.maquina()));
         }
         if (dados.area() !=null){
             this.area = dados.area();

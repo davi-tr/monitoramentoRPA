@@ -40,15 +40,16 @@ public class RoboController {
     @PostMapping
     public ResponseEntity cadastro(@RequestBody @Valid DadosCadastroRobo dados, UriComponentsBuilder uriBuilder){
         var robo = new Robo(dados);
-        var roboBusca = repository.getReferenceByNomeAndMaquinas(dados.nome(),dados.maquina());
+        var roboBusca = repository.findByNomeAndNomeMaquina(dados.nome(), dados.maquina());
         if(roboBusca !=null){
-            if(roboBusca.getNome() == dados.nome()){
-                for (String maquina:
-                     robo.getMaquinas()) {
-                    if (maquina == dados.maquina()){
+            if(roboBusca.getNome().equals(robo.getNome())){
+                for (var maquina:
+                     roboBusca.getMaquinas()) {
+                    if (maquina.getNome().equals(maquina)){
                         return ResponseEntity.badRequest().body(new MensagemErro("Esse robô já existe nessa maquina"));
                     } else{
-                        roboBusca.loadMaquians(maquina);
+                        var maquinaNovo = new Maquina(dados.maquina());
+                        roboBusca.loadMaquians(maquinaNovo);
                         repository.save(robo);
 
                         var uri = uriBuilder.path("RPA/id={id}").buildAndExpand(robo.getId()).toUri();
@@ -57,7 +58,8 @@ public class RoboController {
                 }
             }
         }
-
+        var maquina = new Maquina (dados.maquina());
+        robo.loadMaquians(maquina);
         repository.save(robo);
 
         var uri = uriBuilder.path("RPA/id={id}").buildAndExpand(robo.getId()).toUri();
@@ -66,7 +68,7 @@ public class RoboController {
 
     @PutMapping()
     public ResponseEntity atualizaHora(@RequestBody @Valid DadosAtualizarHoraRobo dados){
-        var robo = repository.getReferenceByNomeAndMaquinas(dados.nome(), dados.maquina());
+        var robo = repository.findByNomeAndNomeMaquina(dados.nome(), dados.maquina());
         robo.atualizarHora(robo);
         repository.save(robo);
 
