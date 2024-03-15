@@ -9,6 +9,6 @@ public interface RoboRepository extends JpaRepository<Robo, Long> {
     @Query("SELECT r FROM Robo r JOIN r.maquinas m WHERE r.nome = :nome AND m.nome = :nomeMaquina")
     Robo findByNomeAndNomeMaquina(String nome, String nomeMaquina);
 
-    @Query("SELECT r FROM Robo r WHERE r.nome = :nome")
-    Robo getReferenceByNome(String nome);
+    @Query("SELECT distinct r FROM Robo r WHERE r.nome = :nome")
+    Robo lookupRobo(String nome);
 }

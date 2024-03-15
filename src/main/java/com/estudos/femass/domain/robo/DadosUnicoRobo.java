@@ -1,5 +1,7 @@
 package com.estudos.femass.domain.robo;
 
+import com.estudos.femass.domain.maquina.Maquina;
+
 import java.time.LocalDateTime;
 import java.util.List;
 

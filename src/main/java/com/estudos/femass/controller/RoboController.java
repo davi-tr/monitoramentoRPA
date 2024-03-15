@@ -1,9 +1,9 @@
 package com.estudos.femass.controller;
 
+import com.estudos.femass.domain.maquina.Maquina;
 import com.estudos.femass.domain.robo.*;
 import com.estudos.femass.repository.robo.RoboRepository;
 import jakarta.validation.Valid;
-import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,9 +12,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/RPA")
@@ -40,12 +37,12 @@ public class RoboController {
     @PostMapping
     public ResponseEntity cadastro(@RequestBody @Valid DadosCadastroRobo dados, UriComponentsBuilder uriBuilder){
         var robo = new Robo(dados);
-        var roboBusca = repository.findByNomeAndNomeMaquina(dados.nome(), dados.maquina());
+        var roboBusca = repository.lookupRobo(dados.nome());
         if(roboBusca !=null){
             if(roboBusca.getNome().equals(robo.getNome())){
                 for (var maquina:
                      roboBusca.getMaquinas()) {
-                    if (maquina.getNome().equals(maquina)){
+                    if (maquina.getNome().equals(dados.maquina())){
                         return ResponseEntity.badRequest().body(new MensagemErro("Esse robô já existe nessa maquina"));
                     } else{
                         var maquinaNovo = new Maquina(dados.maquina());
@@ -58,6 +55,7 @@ public class RoboController {
                 }
             }
         }
+
         var maquina = new Maquina (dados.maquina());
         robo.loadMaquians(maquina);
         repository.save(robo);

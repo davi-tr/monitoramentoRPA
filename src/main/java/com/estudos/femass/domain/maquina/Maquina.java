@@ -1,5 +1,6 @@
-package com.estudos.femass.domain.robo;
+package com.estudos.femass.domain.maquina;
 
+import com.estudos.femass.domain.robo.Robo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Maquina {
+public class Maquina extends Robo {
     @Id
     @GeneratedValue
     private Long id;

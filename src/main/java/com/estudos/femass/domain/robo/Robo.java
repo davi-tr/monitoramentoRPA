@@ -1,5 +1,6 @@
 package com.estudos.femass.domain.robo;
 
+import com.estudos.femass.domain.maquina.Maquina;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
