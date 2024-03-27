@@ -1,6 +1,6 @@
 package com.estudos.femass.domain.robo;
 
-import com.estudos.femass.domain.maquina.Maquina;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,11 +35,8 @@ public class Robo {
     @Column(name = "HoraAtualiza")
     private LocalDateTime hora;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Column(name = "Maquina")
-    private List<Maquina> maquinas = new ArrayList<>();
+    private String maquinas;
 
 
     @Column(name = "Area")
@@ -50,12 +47,9 @@ public class Robo {
         this.nome = dados.nome();
         this.area = dados.area();
         this.hora = LocalDateTime.now();
+        this.maquinas = dados.maquina();
     }
 
-    public void loadMaquians (Maquina maquina){
-        maquinas.add(maquina);
-
-    }
     public void atualizarHora(Robo robo){
         this.hora = LocalDateTime.now();
     }
@@ -66,7 +60,7 @@ public class Robo {
             this.nome = dados.nome();
         }
         if (dados.maquina() !=null){
-            maquinas.add(new Maquina(dados.maquina()));
+            this.maquinas = dados.maquina();
         }
         if (dados.area() !=null){
             this.area = dados.area();

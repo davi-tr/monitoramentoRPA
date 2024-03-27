@@ -1,6 +1,6 @@
 package com.estudos.femass.controller;
 
-import com.estudos.femass.domain.maquina.Maquina;
+
 import com.estudos.femass.domain.robo.*;
 import com.estudos.femass.repository.robo.RoboRepository;
 import jakarta.validation.Valid;
@@ -40,13 +40,9 @@ public class RoboController {
         var roboBusca = repository.lookupRobo(dados.nome());
         if(roboBusca !=null){
             if(roboBusca.getNome().equals(robo.getNome())){
-                for (var maquina:
-                     roboBusca.getMaquinas()) {
-                    if (maquina.getNome().equals(dados.maquina())){
+                if (roboBusca.getMaquinas().equals(dados.maquina())) {
                         return ResponseEntity.badRequest().body(new MensagemErro("Esse robô já existe nessa maquina"));
                     } else{
-                        var maquinaNovo = new Maquina(dados.maquina());
-                        roboBusca.loadMaquians(maquinaNovo);
                         repository.save(robo);
 
                         var uri = uriBuilder.path("RPA/id={id}").buildAndExpand(robo.getId()).toUri();
@@ -54,10 +50,6 @@ public class RoboController {
                     }
                 }
             }
-        }
-
-        var maquina = new Maquina (dados.maquina());
-        robo.loadMaquians(maquina);
         repository.save(robo);
 
         var uri = uriBuilder.path("RPA/id={id}").buildAndExpand(robo.getId()).toUri();
@@ -66,7 +58,7 @@ public class RoboController {
 
     @PutMapping()
     public ResponseEntity atualizaHora(@RequestBody @Valid DadosAtualizarHoraRobo dados){
-        var robo = repository.findByNomeAndNomeMaquina(dados.nome(), dados.maquina());
+        var robo = repository.findByNomeAndMaquinas(dados.nome(), dados.maquina());
         robo.atualizarHora(robo);
         repository.save(robo);
 
